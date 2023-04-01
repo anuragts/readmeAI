@@ -1,17 +1,15 @@
 import Head from "next/head";
 import { useState } from "react";
-// import Image from "next/image";
-import { Inter } from "next/font/google";
+import { FiCopy } from "react-icons/fi";
 import remarkGfm from "remark-gfm";
+import rehypeRaw from "rehype-raw";
 import ReactMarkdown from "react-markdown";
-
-const inter = Inter({ subsets: ["latin"] });
 
 export default function Home() {
   const [owner, setOwner] = useState<string>("");
   const [repo, setRepo] = useState<string>("");
   const [extraDetails, setExtraDetails] = useState<string>("");
-  const [response, setResponse] = useState<string>("Nothing to show here!");
+  const [response, setResponse] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -29,6 +27,11 @@ export default function Home() {
     const json = await response.json();
     setLoading(false);
     setResponse(json);
+  };
+
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text);
+    alert("Copied to clipboard!");
   };
 
   return (
@@ -67,23 +70,42 @@ export default function Home() {
               className="block w-full p-3 rounded bg-gray-200 border border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               value={extraDetails}
               onChange={(event) => setExtraDetails(event.target.value)}
-            />
-            <button className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-400 focus:outline-none focus:bg-blue-400">
-              Submit
+            ></textarea>
+            <button
+              type="submit"
+              className="w-full mt-6 bg-blue-500 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded focus:outline-none focus:shadow-outline"
+            >
+              {loading ? "Generating..." : "Generate"}
             </button>
           </form>
-          <div className="h-screen md:w-1/2 p-6 text-white bg-[#191825]">
-            {loading && (
-              <div className="text-white text-lg p-10">Loading...</div>
-            )}
-            {response && (
-              <ReactMarkdown
-                skipHtml={false}
-                sourcePos={true}
-                remarkPlugins={[remarkGfm]}
-              >{response.replace(/<br \/>/g, '\n')}
-              </ReactMarkdown>
-            )}
+          <div className="w-full md:w-1/2 p-6">
+            <div className="bg-gray-800 p-6 rounded-lg shadow-lg">
+              <div className="flex justify-between items-center">
+                <h2 className="text-gray-200 font-bold text-lg">
+                  Generated README.md
+                </h2>
+                {response && (
+                  <FiCopy
+                    className="h-full w-6 text-gray-400 cursor-pointer hover:text-gray-200"
+                    onClick={() => copyToClipboard(response)}
+                  />
+                )}
+              </div>
+              <hr className="my-4" />
+              {loading && ( 
+                <p className="text-gray-300">Loading...</p>
+              )}
+              {response ? (
+                <ReactMarkdown
+                  children={response.replace(/\\n/g, " \n") }
+                  remarkPlugins={[remarkGfm]}
+                  rehypePlugins={[rehypeRaw]}
+                  className="text-gray-300"
+                />
+              ) : (
+                <p className="text-gray-300">Nothing to show here!</p>
+              )}
+            </div>
           </div>
         </div>
       </main>

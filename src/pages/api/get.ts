@@ -19,8 +19,8 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
   const description: string = details?.description;
   const name: string = details?.name;
   const size: number = details?.size;
-  const stargazers_count: number = details?.stargazers_count;
-  const watchers_count: number = details?.watchers_count;
+//   const stargazers_count: number = details?.stargazers_count;
+//   const watchers_count: number = details?.watchers_count;
   const forks_count: number = details?.forks_count;
   const allow_forking: boolean = details.allow_forking;
   const forks: number = details.forks;
@@ -29,7 +29,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 
   // OpenAI Chatgpt stuff
 
-  const message:string =  ` Name of the repo is ${name} and it is a ${languages} repo. It has ${size} lines of code. It has ${stargazers_count} stars, ${watchers_count} watchers and ${forks_count} forks. It is ${allow_forking} that it can be forked. It has ${forks} forks and the default branch is ${default_branch}. The description ${description} . ${extra}`;
+  const message:string =  ` Repo Name ${name} and created with ${languages} repo. Size - ${size} .  $ ${forks_count} forks. It is ${allow_forking} that it can be forked. It has ${forks} forks and the default branch is ${default_branch}. The description ${description} . ${extra} create a good readme for this repo with instructions on how to contribute and install. `;
   
   const response = await openAi.createChatCompletion({
     model:"gpt-3.5-turbo",
