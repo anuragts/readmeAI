@@ -143,7 +143,7 @@ export default function Home() {
                 />
               ) : (
                 <p className="text-gray-300 text-center">
-                  Nothing to show here!
+                  Nothing to show here! 
                 </p>
               )}
             </div>
@@ -152,4 +152,4 @@ export default function Home() {
       </main>
     </>
   );
-}
+} 
