@@ -31,22 +31,33 @@ export default function Home() {
     setLoading(true);
     let data = { owner, repo, extraDetails };
     if (repoLink) {
-      const { owner: extractedOwner, repo: extractedRepo } =
-        extractRepoInfo(repoLink);
-      setOwner(extractedOwner);
-      setRepo(extractedRepo);
-      data = { owner: extractedOwner, repo: extractedRepo, extraDetails };
+      try {
+        const { owner: extractedOwner, repo: extractedRepo } =
+          extractRepoInfo(repoLink);
+        setOwner(extractedOwner);
+        setRepo(extractedRepo);
+        data = { owner: extractedOwner, repo: extractedRepo, extraDetails };
+      } catch (error: any) {
+        setLoading(false);
+        setResponse(error.message);
+        return;
+      }
     }
-    const response = await fetch("/api/get", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    });
-    const json = await response.json();
-    setLoading(false);
-    setResponse(json);
+    try {
+      const response = await fetch("/api/get", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+      const json = await response.json();
+      setLoading(false);
+      setResponse(json);
+    } catch (error) {
+      setLoading(false);
+      setResponse("An error occurred while generating the README.md file.");
+    }
   };
 
   const copyToClipboard = (text: string) => {
