@@ -8,8 +8,9 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
   type githubBody = {
     owner: string;
     repo: string;
+    extra?: string;
   };
-  const { owner, repo } = req.body as githubBody;
+  const { owner, repo,extra } = req.body as githubBody;
 
   // Github API stuff , get details and language.
   const lang = await getLanguage(owner, repo);
@@ -24,10 +25,11 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
   const allow_forking: boolean = details.allow_forking;
   const forks: number = details.forks;
   const default_branch: string = details.default_branch;
+  
 
   // OpenAI Chatgpt stuff
 
-  const message:string =  ` Name of the repo is ${name} and it is a ${languages} repo. It has ${size} lines of code. It has ${stargazers_count} stars, ${watchers_count} watchers and ${forks_count} forks. It is ${allow_forking} that it can be forked. It has ${forks} forks and the default branch is ${default_branch}. The description ${description} `;
+  const message:string =  ` Name of the repo is ${name} and it is a ${languages} repo. It has ${size} lines of code. It has ${stargazers_count} stars, ${watchers_count} watchers and ${forks_count} forks. It is ${allow_forking} that it can be forked. It has ${forks} forks and the default branch is ${default_branch}. The description ${description} . ${extra}`;
   
   const response = await openAi.createChatCompletion({
     model:"gpt-3.5-turbo",

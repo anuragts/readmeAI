@@ -1,7 +1,9 @@
 import Head from "next/head";
 import { useState } from "react";
-import Image from "next/image";
+// import Image from "next/image";
 import { Inter } from "next/font/google";
+import remarkGfm from "remark-gfm";
+import ReactMarkdown from "react-markdown";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -10,9 +12,12 @@ export default function Home() {
   const [repo, setRepo] = useState<string>("");
   const [extraDetails, setExtraDetails] = useState<string>("");
   const [response, setResponse] = useState<string>("Nothing to show here!");
+  const [loading, setLoading] = useState<boolean>(false);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    setResponse("");
+    setLoading(true);
     const data = { owner, repo, extraDetails };
     const response = await fetch("/api/get", {
       method: "POST",
@@ -22,6 +27,7 @@ export default function Home() {
       body: JSON.stringify(data),
     });
     const json = await response.json();
+    setLoading(false);
     setResponse(json);
   };
 
@@ -34,7 +40,6 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main>
-        Generate og Readme's
         <div className="flex flex-col md:flex-row">
           <form onSubmit={handleSubmit} className="w-full md:w-1/2 p-6">
             <label className="block mb-2 font-bold text-gray-700">
@@ -67,13 +72,17 @@ export default function Home() {
               Submit
             </button>
           </form>
-          <div className="w-full md:w-1/2 p-6">
+          <div className="h-screen md:w-1/2 p-6 text-white bg-[#191825]">
+            {loading && (
+              <div className="text-white text-lg p-10">Loading...</div>
+            )}
             {response && (
-              <div className="text-white text-lg p-10">
-                {response.split("\n").map((e: any) => (
-                  <p>{e}</p>
-                ))}
-              </div>
+              <ReactMarkdown
+                skipHtml={false}
+                sourcePos={true}
+                remarkPlugins={[remarkGfm]}
+              >{response.replace(/<br \/>/g, '\n')}
+              </ReactMarkdown>
             )}
           </div>
         </div>
