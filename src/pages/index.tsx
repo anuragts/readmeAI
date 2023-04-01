@@ -65,6 +65,10 @@ export default function Home() {
       <main>
         <div className="flex flex-col md:flex-row">
           <form onSubmit={handleSubmit} className="w-full md:w-1/2 p-6">
+          <div className="text-4xl block mb-[1rem] mt-[1rem] font-bold text-gray-700">ReadME-AI</div>
+          <p className="mt-3 text-xl text-[#3B3B3B] mb-[2rem]">
+                Make you Readme file perfect !
+              </p>
           <label className="block mb-2 font-bold text-gray-700">
               GitHub Repository Link :
             </label>
