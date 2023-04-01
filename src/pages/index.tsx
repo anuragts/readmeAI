@@ -4,6 +4,7 @@ import { FiCopy } from "react-icons/fi";
 import remarkGfm from "remark-gfm";
 import rehypeRaw from "rehype-raw";
 import ReactMarkdown from "react-markdown";
+import Loading from '@/pages/components/Loading';
 
 export default function Home() {
   const [owner, setOwner] = useState<string>("");
@@ -46,13 +47,14 @@ export default function Home() {
         <div className="flex flex-col md:flex-row">
           <form onSubmit={handleSubmit} className="w-full md:w-1/2 p-6">
             <label className="block mb-2 font-bold text-gray-700">
-              Repository Owner:
+              Repository Owner Username:
             </label>
             <input
               className="block w-full p-3 rounded bg-gray-200 border border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               type="text"
               value={owner}
               onChange={(event) => setOwner(event.target.value)}
+              placeholder="anuragts"
             />
             <label className="block mt-4 mb-2 font-bold text-gray-700">
               Repository Name:
@@ -62,14 +64,16 @@ export default function Home() {
               type="text"
               value={repo}
               onChange={(event) => setRepo(event.target.value)}
+              placeholder="readmeAI"
             />
             <label className="block mt-4 mb-2 font-bold text-gray-700">
-              Extra Details:
+              Extra Details about the project:
             </label>
             <textarea
               className="block w-full p-3 rounded bg-gray-200 border border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               value={extraDetails}
               onChange={(event) => setExtraDetails(event.target.value)}
+              placeholder="Add any extra details about the project here."
             ></textarea>
             <button
               type="submit"
@@ -79,22 +83,22 @@ export default function Home() {
             </button>
           </form>
           <div className="w-full md:w-1/2 p-6">
-            <div className="bg-gray-800 p-6 rounded-lg shadow-lg">
+            <div className="bg-gray-800 p-6 rounded-lg shadow-lg h-screen">
               <div className="flex justify-between items-center">
                 <h2 className="text-gray-200 font-bold text-lg">
                   Generated README.md
                 </h2>
                 {response && (
                   <FiCopy
-                    className="h-full w-6 text-gray-400 cursor-pointer hover:text-gray-200"
+                    className="h-6 w-6 text-gray-400 cursor-pointer hover:text-gray-200"
                     onClick={() => copyToClipboard(response)}
                   />
                 )}
               </div>
               <hr className="my-4" />
-              {loading && ( 
-                <p className="text-gray-300">Loading...</p>
-              )}
+              {loading && <div className="flex justify-center">
+                <Loading />
+              </div> }
               {response ? (
                 <ReactMarkdown
                   children={response.replace(/\\n/g, " \n") }
@@ -102,8 +106,8 @@ export default function Home() {
                   rehypePlugins={[rehypeRaw]}
                   className="text-gray-300"
                 />
-              ) : (
-                <p className="text-gray-300">Nothing to show here!</p>
+              ) : ( 
+                <p className="text-gray-300 text-center">Nothing to show here!</p>
               )}
             </div>
           </div>
