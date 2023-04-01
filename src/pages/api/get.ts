@@ -1,12 +1,17 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import getLanguage from "@/services/getLanguage";
 import getDetails from "@/services/getDetails";
+import { openAi } from "@/config/openAi.config";
+import sample from "@/utils/sample";
+
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   type githubBody = {
     owner: string;
     repo: string;
   };
   const { owner, repo } = req.body as githubBody;
+
+  // Github API stuff , get details and language.
   const lang = await getLanguage(owner, repo);
   const languages = `${JSON.stringify(lang)}`;
   const details = await getDetails(owner, repo);
@@ -19,16 +24,19 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
   const allow_forking: boolean = details.allow_forking;
   const forks: number = details.forks;
   const default_branch: string = details.default_branch;
-  res.status(200).json({
-    name: `${name}`,
-    description: `${description}`,
-    size: `${size}`,
-    stargazers_count: `${stargazers_count}`,
-    watchers_count: `${watchers_count}`,
-    forks_count: `${forks_count}`,
-    allow_forking: `${allow_forking}`,
-    forks: `${forks}`,
-    default_branch: `${default_branch}`,
-    lang: `$${languages}`,
-  });
+
+  // OpenAI Chatgpt stuff
+
+  const message:string =  ` Name of the repo is ${name} and it is a ${languages} repo. It has ${size} lines of code. It has ${stargazers_count} stars, ${watchers_count} watchers and ${forks_count} forks. It is ${allow_forking} that it can be forked. It has ${forks} forks and the default branch is ${default_branch}. The description ${description} `;
+  
+  const response = await openAi.createChatCompletion({
+    model:"gpt-3.5-turbo",
+    messages:[
+        {"role": "system", "content": `${sample.system}`},  
+        {"role": "user", "content": `${sample.user1}`},
+        {"role": "assistant", "content": `${sample.assistant}`},
+        {"role": "user", "content": `${message}`}
+    ]
+})
+res.status(200).json(response.data.choices[0].message?.content);
 };
